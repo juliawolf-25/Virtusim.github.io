@@ -1,0 +1,2616 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VirtuSim - Платформа для симуляторов</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6c5ce7;
+            --secondary: #5b4fcf;
+            --accent: #00cec9;
+            --dark: #2d3436;
+            --light: #f8f9fa;
+            --success: #00b894;
+            --danger: #d63031;
+            --warning: #fdcb6e;
+            --gray: #636e72;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Exo 2', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fb;
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header styles */
+        header {
+            background-color: white;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 2.1rem;
+            font-weight: 900;
+            color: var(--primary);
+            text-decoration: none;
+            font-family: 'Orbitron', sans-serif;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 2px 4px rgba(108, 92, 231, 0.2);
+        }
+
+        .logo img {
+            height: 40px;
+            margin-right: 10px;
+        }
+
+        .logo i {
+            margin-right: 12px;
+            color: var(--accent);
+            font-size: 2.3rem;
+            text-shadow: 0 2px 4px rgba(0, 206, 201, 0.3);
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+
+        .nav-links li {
+            margin-left: 25px;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--dark);
+            font-weight: 600;
+            transition: var(--transition);
+            font-size: 1.05rem;
+            position: relative;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            transition: var(--transition);
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+            font-size: 0.9rem;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(108, 92, 231, 0.3);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+        }
+
+        .btn-outline:hover {
+            background-color: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(108, 92, 231, 0.2);
+        }
+
+        .btn-success {
+            background-color: var(--success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #00a085;
+        }
+
+        .btn-danger {
+            background-color: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #c02a2a;
+        }
+
+        .btn-warning {
+            background-color: var(--warning);
+            color: var(--dark);
+        }
+
+        .btn-warning:hover {
+            background-color: #f7b84d;
+        }
+
+        /* Main content */
+        .main-content {
+            flex: 1;
+            padding: 40px 0;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 40px 0;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+            border-radius: 10px;
+        }
+
+        .page-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .page-header p {
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .legal-content {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            margin-bottom: 40px;
+        }
+
+        .legal-section {
+            margin-bottom: 30px;
+        }
+
+        .legal-section h2 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--accent);
+            font-weight: 700;
+        }
+
+        .legal-section h3 {
+            color: var(--dark);
+            margin: 20px 0 10px;
+            font-weight: 600;
+        }
+
+        .legal-section p, .legal-section ul {
+            margin-bottom: 15px;
+            line-height: 1.7;
+        }
+
+        .legal-section ul {
+            padding-left: 20px;
+        }
+
+        .legal-section li {
+            margin-bottom: 8px;
+        }
+
+        .back-to-home {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        /* Hero section */
+        .hero {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+            padding: 100px 0;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 25px;
+            font-weight: 800;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            max-width: 800px;
+            margin: 0 auto 40px;
+            font-weight: 300;
+        }
+
+        .hero-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 40px;
+        }
+
+        .hero .btn {
+            padding: 15px 35px;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        /* Features section */
+        .section {
+            padding: 100px 0;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .section-title h2 {
+            font-size: 2.8rem;
+            color: var(--dark);
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+
+        .section-title p {
+            color: var(--gray);
+            max-width: 700px;
+            margin: 0 auto;
+            font-size: 1.1rem;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 40px;
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 12px;
+            padding: 40px 30px;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            text-align: center;
+            position: relative;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .feature-icon {
+            background-color: rgba(108, 92, 231, 0.1);
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 25px;
+            color: var(--primary);
+            font-size: 2.2rem;
+        }
+
+        .feature-card h3 {
+            margin-bottom: 20px;
+            color: var(--dark);
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .feature-card p {
+            color: var(--gray);
+            line-height: 1.7;
+        }
+
+        /* Upload section */
+        .upload {
+            background: linear-gradient(135deg, var(--dark), #3d4e5d);
+            color: white;
+            text-align: center;
+        }
+
+        .upload h2 {
+            color: white;
+        }
+
+        .upload p {
+            max-width: 800px;
+            margin: 0 auto 40px;
+            font-size: 1.1rem;
+        }
+
+        .upload-steps {
+            display: flex;
+            justify-content: space-between;
+            max-width: 900px;
+            margin: 60px auto 0;
+            position: relative;
+        }
+
+        .upload-steps::before {
+            content: '';
+            position: absolute;
+            top: 40px;
+            left: 10%;
+            right: 10%;
+            height: 3px;
+            background-color: rgba(255, 255, 255, 0.3);
+            z-index: 1;
+        }
+
+        .step {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            flex: 1;
+        }
+
+        .step-number {
+            width: 80px;
+            height: 80px;
+            background-color: var(--accent);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-weight: bold;
+            font-size: 1.5rem;
+            box-shadow: 0 4px 10px rgba(0, 206, 201, 0.3);
+        }
+
+        .step h3 {
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .step p {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        /* FAQ Section */
+        .faq-section {
+            background: white;
+            padding: 60px 0;
+        }
+
+        .faq-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .faq-item {
+            margin-bottom: 20px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            position: relative;
+        }
+
+        .faq-question {
+            background: var(--primary);
+            color: white;
+            padding: 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .faq-question:hover {
+            background: var(--secondary);
+        }
+
+        .faq-answer {
+            background: #f8f9fa;
+            padding: 0;
+            max-height: 0;
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .faq-answer.active {
+            padding: 20px;
+            max-height: 500px;
+        }
+
+        /* Contacts Section */
+        .contacts-section {
+            background: white;
+            padding: 60px 0;
+        }
+
+        .contacts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .contact-card {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .contact-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .contact-icon {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+
+        .contact-card h3 {
+            margin-bottom: 15px;
+            color: var(--dark);
+        }
+
+        .contact-info {
+            color: var(--gray);
+            line-height: 1.6;
+        }
+
+        .contact-link {
+            color: var(--primary);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .contact-link:hover {
+            color: var(--secondary);
+            text-decoration: underline;
+        }
+
+        /* Documentation Section */
+        .docs-section {
+            background: white;
+            padding: 60px 0;
+        }
+
+        .docs-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .docs-sidebar {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        .docs-nav {
+            list-style: none;
+        }
+
+        .docs-nav li {
+            margin-bottom: 15px;
+        }
+
+        .docs-nav a {
+            color: var(--dark);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+            display: block;
+            padding: 8px 15px;
+            border-radius: 5px;
+        }
+
+        .docs-nav a:hover {
+            background-color: rgba(108, 92, 231, 0.1);
+            color: var(--primary);
+        }
+
+        .docs-nav a.active {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .docs-content {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            position: relative;
+        }
+
+        .docs-article {
+            margin-bottom: 50px;
+        }
+
+        .docs-article h2 {
+            color: var(--primary);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--accent);
+        }
+
+        .docs-article h3 {
+            color: var(--dark);
+            margin: 25px 0 15px;
+        }
+
+        .code-block {
+            background: #2d3436;
+            color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+        }
+
+        .info-box {
+            background: #e3f2fd;
+            border-left: 4px solid var(--primary);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .warning-box {
+            background: #fff3e0;
+            border-left: 4px solid var(--warning);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        /* Admin Panel */
+        .admin-panel {
+            background-color: var(--dark);
+            color: white;
+            padding: 25px 0;
+            margin-bottom: 50px;
+        }
+
+        .admin-panel .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .admin-panel h2 {
+            font-size: 1.6rem;
+            font-weight: 600;
+        }
+
+        .admin-actions {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        /* Edit Mode Styles */
+        .edit-mode .editable {
+            position: relative;
+            outline: 2px dashed rgba(108, 92, 231, 0.3);
+            transition: var(--transition);
+        }
+
+        .edit-mode .editable:hover {
+            outline: 2px dashed var(--primary);
+            background-color: rgba(108, 92, 231, 0.05);
+        }
+
+        .edit-mode .edit-tooltip {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            cursor: pointer;
+            z-index: 1000;
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .edit-mode .editable:hover .edit-tooltip {
+            opacity: 1;
+        }
+
+        .edit-controls {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            min-width: 200px;
+        }
+
+        .edit-controls h3 {
+            margin: 0 0 10px 0;
+            color: var(--dark);
+            font-size: 1.1rem;
+        }
+
+        .edit-controls .btn {
+            padding: 8px 12px;
+            font-size: 0.8rem;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 650px;
+            padding: 35px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .modal-header h2 {
+            color: var(--dark);
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.8rem;
+            cursor: pointer;
+            color: var(--gray);
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: var(--dark);
+            font-size: 1.1rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 18px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.1);
+            outline: none;
+        }
+
+        textarea.form-control {
+            min-height: 140px;
+            resize: vertical;
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            margin-top: 35px;
+        }
+
+        .logo-preview {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-top: 15px;
+        }
+
+        .logo-preview img {
+            height: 60px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 8px;
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--dark);
+            color: white;
+            padding: 70px 0 35px;
+            margin-top: auto;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 50px;
+            margin-bottom: 50px;
+        }
+
+        .footer-column h3 {
+            margin-bottom: 25px;
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 12px;
+        }
+
+        .footer-links a {
+            color: #b8c1ec;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .footer-links a:hover {
+            color: white;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 20px;
+            margin-top: 25px;
+        }
+
+        .social-links a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 45px;
+            height: 45px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            color: white;
+            transition: var(--transition);
+        }
+
+        .social-links a:hover {
+            background-color: var(--accent);
+            transform: translateY(-5px);
+        }
+
+        .copyright {
+            text-align: center;
+            padding-top: 40px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: #b8c1ec;
+            font-size: 1rem;
+        }
+
+        /* Login Modal */
+        .login-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .login-content {
+            background-color: white;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 400px;
+            padding: 35px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+        }
+
+        .login-tabs {
+            display: flex;
+            margin-bottom: 25px;
+            border-bottom: 2px solid #eee;
+        }
+
+        .login-tab {
+            flex: 1;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: var(--transition);
+        }
+
+        .login-tab.active {
+            border-bottom-color: var(--primary);
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .login-form {
+            display: none;
+        }
+
+        .login-form.active {
+            display: block;
+        }
+
+        /* Support Section */
+        .support-section {
+            padding: 60px 0;
+            background: white;
+        }
+
+        .support-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .support-option {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+
+        .support-option:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .support-icon {
+            font-size: 3rem;
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+
+        .support-option h3 {
+            margin-bottom: 15px;
+            color: var(--dark);
+        }
+
+        .support-option p {
+            color: var(--gray);
+            margin-bottom: 20px;
+        }
+
+        /* Mobile Menu */
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--dark);
+            cursor: pointer;
+        }
+
+        .mobile-menu {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: white;
+            z-index: 1000;
+            padding: 20px;
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+        }
+
+        .mobile-menu.active {
+            transform: translateX(0);
+        }
+
+        .mobile-menu-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .mobile-nav-links {
+            list-style: none;
+        }
+
+        .mobile-nav-links li {
+            margin-bottom: 15px;
+        }
+
+        .mobile-nav-links a {
+            text-decoration: none;
+            color: var(--dark);
+            font-weight: 600;
+            font-size: 1.1rem;
+            display: block;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .mobile-nav-buttons {
+            margin-top: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        /* Coming Soon Section */
+        .coming-soon {
+            text-align: center;
+            padding: 80px 0;
+            background: white;
+        }
+
+        .coming-soon-icon {
+            font-size: 4rem;
+            color: var(--primary);
+            margin-bottom: 30px;
+        }
+
+        .coming-soon h2 {
+            color: var(--dark);
+            margin-bottom: 20px;
+            font-size: 2.5rem;
+        }
+
+        .coming-soon p {
+            color: var(--gray);
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin: 0 auto 40px;
+        }
+
+        /* Responsive styles */
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: row;
+                padding: 15px 0;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .nav-buttons {
+                display: none;
+            }
+
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero p {
+                font-size: 1.1rem;
+                padding: 0 15px;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+                align-items: center;
+                gap: 15px;
+            }
+
+            .upload-steps {
+                flex-direction: column;
+                gap: 40px;
+            }
+
+            .upload-steps::before {
+                display: none;
+            }
+
+            .admin-panel .container {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .admin-actions {
+                justify-content: center;
+            }
+
+            .section {
+                padding: 70px 0;
+            }
+            
+            .legal-content {
+                padding: 20px;
+            }
+            
+            .logo {
+                font-size: 1.8rem;
+            }
+            
+            .contacts-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .docs-sidebar {
+                margin-bottom: 30px;
+            }
+
+            .edit-controls {
+                top: 80px;
+                right: 10px;
+                left: 10px;
+                min-width: auto;
+            }
+
+            .footer-content {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .support-options {
+                grid-template-columns: 1fr;
+            }
+
+            .page-header h1 {
+                font-size: 2rem;
+            }
+
+            .page-header p {
+                font-size: 1.1rem;
+                padding: 0 15px;
+            }
+
+            .section-title h2 {
+                font-size: 2.2rem;
+            }
+
+            .feature-card {
+                padding: 30px 20px;
+            }
+
+            .docs-content {
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .hero p {
+                font-size: 1rem;
+            }
+
+            .section-title h2 {
+                font-size: 1.8rem;
+            }
+
+            .page-header h1 {
+                font-size: 1.8rem;
+            }
+
+            .logo {
+                font-size: 1.5rem;
+            }
+
+            .btn {
+                padding: 12px 20px;
+                font-size: 0.9rem;
+            }
+
+            .modal-content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <nav class="navbar">
+                <div class="logo-container">
+                    <a href="#" class="logo" id="siteLogo">
+                        <i class="fas fa-vr-cardboard" id="logoIcon"></i>
+                        <span id="logoText">VirtuSim</span>
+                    </a>
+                </div>
+                <ul class="nav-links">
+                    <li><a href="#" class="nav-link" data-page="home">Главная</a></li>
+                    <li><a href="#" class="nav-link" data-page="documentation">Документация</a></li>
+                    <li><a href="#" class="nav-link" data-page="support">Поддержка</a></li>
+                    <li><a href="#" class="nav-link" data-page="contacts">Контакты</a></li>
+                </ul>
+                <div class="nav-buttons">
+                    <button class="btn btn-outline" id="loginBtn">Войти</button>
+                    <button class="btn btn-primary" id="registerBtn">Регистрация</button>
+                </div>
+                <button class="mobile-menu-btn" id="mobileMenuBtn">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobileMenu">
+        <div class="mobile-menu-header">
+            <a href="#" class="logo">
+                <i class="fas fa-vr-cardboard"></i>
+                <span>VirtuSim</span>
+            </a>
+            <button class="close-mobile-menu" id="closeMobileMenu">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <ul class="mobile-nav-links">
+            <li><a href="#" class="mobile-nav-link" data-page="home">Главная</a></li>
+            <li><a href="#" class="mobile-nav-link" data-page="documentation">Документация</a></li>
+            <li><a href="#" class="mobile-nav-link" data-page="support">Поддержка</a></li>
+            <li><a href="#" class="mobile-nav-link" data-page="contacts">Контакты</a></li>
+            <li><a href="#" class="mobile-nav-link" data-page="faq">FAQ</a></li>
+            <li><a href="#" class="mobile-nav-link" data-page="terms">Условия</a></li>
+            <li><a href="#" class="mobile-nav-link" data-page="privacy">Конфиденциальность</a></li>
+        </ul>
+        <div class="mobile-nav-buttons">
+            <button class="btn btn-outline" id="mobileLoginBtn">Войти</button>
+            <button class="btn btn-primary" id="mobileRegisterBtn">Регистрация</button>
+        </div>
+    </div>
+
+    <!-- Admin Panel (только для владельца) -->
+    <div class="admin-panel" id="adminPanel" style="display: none;">
+        <div class="container">
+            <h2><i class="fas fa-crown"></i> Панель администратора</h2>
+            <div class="admin-actions">
+                <button class="btn btn-success" id="addSimulatorBtn">
+                    <i class="fas fa-plus"></i> Добавить симулятор
+                </button>
+                <button class="btn btn-outline" style="color: white; border-color: white;" id="changeLogoBtn">
+                    <i class="fas fa-image"></i> Сменить логотип
+                </button>
+                <button class="btn btn-outline" style="color: white; border-color: white;" id="editContentBtn">
+                    <i class="fas fa-edit"></i> Редактировать контент
+                </button>
+                <button class="btn btn-warning" id="toggleEditModeBtn">
+                    <i class="fas fa-magic"></i> Режим редактирования
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Controls Panel -->
+    <div class="edit-controls" id="editControls" style="display: none;">
+        <h3>Редактирование</h3>
+        <button class="btn btn-primary" id="saveChangesBtn">
+            <i class="fas fa-save"></i> Сохранить изменения
+        </button>
+        <button class="btn btn-outline" id="cancelEditBtn">
+            <i class="fas fa-times"></i> Отменить редактирование
+        </button>
+    </div>
+
+    <!-- Main Content Area -->
+    <main class="main-content" id="mainContent">
+        <!-- Home Page (default) -->
+        <div id="home-page" class="page-content">
+            <!-- Hero Section -->
+            <section class="hero">
+                <div class="container">
+                    <h1 id="heroTitle">VirtuSim - Платформа для симуляторов</h1>
+                    <p id="heroDescription">Откройте для себя мир реалистичных симуляторов. Создавайте, тестируйте и делитесь своими проектами с глобальным сообществом разработчиков и энтузиастов.</p>
+                    <div class="hero-buttons">
+                        <button class="btn btn-primary" id="startDevelopmentBtn">Начать разработку</button>
+                        <button class="btn btn-outline" style="background: rgba(255,255,255,0.2); color: white; border-color: white;" id="learnMoreBtn">Узнать больше</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Features Section -->
+            <section class="section">
+                <div class="container">
+                    <div class="section-title">
+                        <h2>Почему выбирают VirtuSim</h2>
+                        <p>Современная платформа для создания и распространения симуляторов любого уровня сложности</p>
+                    </div>
+                    <div class="features-grid">
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                            </div>
+                            <h3>Простая загрузка</h3>
+                            <p>Интуитивный интерфейс позволяет легко загружать и публиковать симуляторы. Поддержка всех популярных форматов и автоматическая оптимизация.</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <h3>Активное сообщество</h3>
+                            <p>Присоединяйтесь к тысячам разработчиков и энтузиастов. Обменивайтесь опытом, получайте обратную связь и находите collaborators для ваших проектов.</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <h3>Детальная аналитика</h3>
+                            <p>Получайте подробную статистику по загрузкам, отзывам и использованию ваших симуляторов. Отслеживайте производительность и улучшайте свои проекты.</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <i class="fas fa-code"></i>
+                            </div>
+                            <h3>Готовые решения</h3>
+                            <p>Библиотека готовых компонентов и шаблонов для быстрого старта. Поддержка популярных фреймворков и технологий разработки.</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                            <h3>Безопасность и права</h3>
+                            <p>Надежная система защиты интеллектуальной собственности. Гибкие настройки доступа и лицензирования для ваших проектов.</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <i class="fas fa-globe"></i>
+                            </div>
+                            <h3>Глобальная доступность</h3>
+                            <p>CDN-сеть обеспечивает быструю загрузку по всему миру. Мультиязычная поддержка и адаптация под локальные рынки.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Upload Section -->
+            <section class="section upload">
+                <div class="container">
+                    <div class="section-title">
+                        <h2>Загрузите свой симулятор</h2>
+                        <p>Поделитесь своим творением с мировым сообществом всего за несколько простых шагов</p>
+                    </div>
+                    <div class="upload-steps">
+                        <div class="step">
+                            <div class="step-number">1</div>
+                            <h3>Создайте аккаунт</h3>
+                            <p>Быстрая регистрация с подтверждением по email</p>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">2</div>
+                            <h3>Подготовьте проект</h3>
+                            <p>Упакуйте файлы и добавьте документацию</p>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">3</div>
+                            <h3>Загрузите и опишите</h3>
+                            <p>Добавьте описание, скриншоты и теги</p>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">4</div>
+                            <h3>Публикация</h3>
+                            <p>Опубликуйте и делитесь с сообществом</p>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" style="background: var(--accent); margin-top: 60px; padding: 15px 40px; font-size: 1.2rem;" id="startUploadBtn">
+                        Начать загрузку
+                    </button>
+                </div>
+            </section>
+        </div>
+
+        <!-- Catalog Page (убрана) -->
+
+        <!-- Support Page -->
+        <div id="support-page" class="page-content" style="display: none;">
+            <div class="container">
+                <div class="page-header">
+                    <h1>Поддержка</h1>
+                    <p>Мы всегда готовы помочь вам с любыми вопросами</p>
+                </div>
+                <div class="support-section">
+                    <div class="container">
+                        <div class="support-options">
+                            <div class="support-option">
+                                <div class="support-icon">
+                                    <i class="fas fa-envelope"></i>
+                                </div>
+                                <h3>Электронная почта</h3>
+                                <p>Напишите нам на почту, и мы ответим в течение 24 часов. Мы помогаем с техническими вопросами, проблемами загрузки и другими вопросами.</p>
+                                <a href="mailto:julia.wolf.878@gmail.com" class="btn btn-primary">Написать</a>
+                            </div>
+                            
+                            <div class="support-option">
+                                <div class="support-icon">
+                                    <i class="fas fa-comments"></i>
+                                </div>
+                                <h3>Форум поддержки</h3>
+                                <p>Получите помощь от сообщества разработчиков и экспертов. Обсуждайте проблемы, делитесь решениями и находите ответы на частые вопросы.</p>
+                                <button class="btn btn-primary" id="forumSupportBtn">Перейти на форум</button>
+                            </div>
+                            
+                            <div class="support-option">
+                                <div class="support-icon">
+                                    <i class="fas fa-book"></i>
+                                </div>
+                                <h3>Документация</h3>
+                                <p>Изучите подробную документацию по использованию платформы, API и лучшим практикам разработки симуляторов.</p>
+                                <button class="btn btn-primary" id="docsSupportBtn">Открыть документацию</button>
+                            </div>
+                            
+                            <div class="support-option">
+                                <div class="support-icon">
+                                    <i class="fas fa-question-circle"></i>
+                                </div>
+                                <h3>Частые вопросы</h3>
+                                <p>Ответы на самые популярные вопросы о платформе, загрузке контента, лицензировании и технических требованиях.</p>
+                                <button class="btn btn-primary" id="faqSupportBtn">Смотреть FAQ</button>
+                            </div>
+                        </div>
+                        
+                        <div class="info-box" style="margin-top: 40px;">
+                            <h3>Центр помощи VirtuSim</h3>
+                            <p>Наш центр помощи содержит подробные руководства по всем аспектам работы с платформой:</p>
+                            <ul>
+                                <li>Пошаговые инструкции по загрузке симуляторов</li>
+                                <li>Руководства по использованию API</li>
+                                <li>Советы по оптимизации производительности</li>
+                                <li>Инструкции по настройке лицензирования</li>
+                                <li>Рекомендации по созданию качественной документации</li>
+                            </ul>
+                            <p>Если вы не нашли ответ на свой вопрос, обратитесь в нашу службу поддержки.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Documentation Page -->
+        <div id="documentation-page" class="page-content" style="display: none;">
+            <div class="container">
+                <div class="page-header">
+                    <h1>Документация</h1>
+                    <p>Полное руководство по использованию платформы VirtuSim</p>
+                </div>
+                <div class="docs-section">
+                    <div class="container">
+                        <div class="docs-container">
+                            <div class="docs-sidebar">
+                                <h3>Содержание</h3>
+                                <ul class="docs-nav">
+                                    <li><a href="#getting-started" class="docs-nav-link">Начало работы</a></li>
+                                    <li><a href="#uploading" class="docs-nav-link">Загрузка симуляторов</a></li>
+                                    <li><a href="#management" class="docs-nav-link">Управление проектами</a></li>
+                                    <li><a href="#api" class="docs-nav-link">API и интеграция</a></li>
+                                    <li><a href="#troubleshooting" class="docs-nav-link">Решение проблем</a></li>
+                                </ul>
+                            </div>
+                            
+                            <div class="docs-content">
+                                <div class="docs-article" id="getting-started">
+                                    <h2>Начало работы</h2>
+                                    
+                                    <h3>Регистрация аккаунта</h3>
+                                    <p>Для начала работы с VirtuSim необходимо создать учетную запись:</p>
+                                    <ol>
+                                        <li>Нажмите кнопку "Регистрация" в правом верхнем углу</li>
+                                        <li>Заполните обязательные поля: email, имя пользователя и пароль</li>
+                                        <li>Подтвердите email, перейдя по ссылке в письме</li>
+                                        <li>Войдите в систему используя свои учетные данные</li>
+                                    </ol>
+                                    
+                                    <div class="info-box">
+                                        <p><strong>Примечание:</strong> Для доступа к некоторым функциям может потребоваться верификация аккаунта.</p>
+                                    </div>
+                                    
+                                    <h3>Настройка профиля</h3>
+                                    <p>После регистрации рекомендуется настроить профиль:</p>
+                                    <ul>
+                                        <li>Добавьте аватар и информацию о себе</li>
+                                        <li>Укажите свои навыки и интересы</li>
+                                        <li>Настройте уведомления по email</li>
+                                        <li>Подключите социальные сети</li>
+                                    </ul>
+                                </div>
+                                
+                                <div class="docs-article" id="uploading">
+                                    <h2>Загрузка симуляторов</h2>
+                                    
+                                    <h3>Требования к файлам</h3>
+                                    <p>Перед загрузкой убедитесь, что ваш проект соответствует требованиям:</p>
+                                    <ul>
+                                        <li>Максимальный размер архива: 2 ГБ</li>
+                                        <li>Поддерживаемые форматы: ZIP, RAR, 7Z</li>
+                                        <li>Обязательная документация в формате PDF или Markdown</li>
+                                        <li>Минимум 3 скриншота проекта</li>
+                                        <li>Файл README с описанием установки и использования</li>
+                                    </ul>
+                                    
+                                    <h3>Процесс загрузки</h3>
+                                    <p>Пошаговый процесс загрузки симулятора:</p>
+                                    <ol>
+                                        <li>Войдите в свой аккаунт</li>
+                                        <li>Нажмите "Добавить симулятор" в панели управления</li>
+                                        <li>Заполните информацию о проекте:
+                                            <ul>
+                                                <li>Название и описание</li>
+                                                <li>Категория и теги</li>
+                                                <li>Системные требования</li>
+                                                <li>Инструкция по установке</li>
+                                            </ul>
+                                        </li>
+                                        <li>Загрузите архив с файлами проекта</li>
+                                        <li>Добавьте скриншоты и видео-презентацию</li>
+                                        <li>Выберите лицензию для распространения</li>
+                                        <li>Отправьте на модерацию</li>
+                                    </ol>
+                                </div>
+                                
+                                <div class="docs-article" id="management">
+                                    <h2>Управление проектами</h2>
+                                    
+                                    <h3>Панель управления</h3>
+                                    <p>После загрузки симулятора вы получаете доступ к панели управления проектом:</p>
+                                    <ul>
+                                        <li><strong>Статистика:</strong> Просмотр количества загрузок, оценок и комментариев</li>
+                                        <li><strong>Обновления:</strong> Загрузка новых версий проекта</li>
+                                        <li><strong>Комментарии:</strong> Модерация отзывов пользователей</li>
+                                        <li><strong>Аналитика:</strong> Детальные отчеты об использовании</li>
+                                    </ul>
+                                    
+                                    <h3>Обновление проектов</h3>
+                                    <p>Для обновления существующего симулятора:</p>
+                                    <ol>
+                                        <li>Перейдите в панель управления проектом</li>
+                                        <li>Нажмите "Загрузить новую версию"</li>
+                                        <li>Укажите изменения в новой версии</li>
+                                        <li>Загрузите обновленные файлы</li>
+                                        <li>Отправьте на модерацию</li>
+                                    </ol>
+                                </div>
+
+                                <div class="docs-article" id="api">
+                                    <h2>API и интеграция</h2>
+                                    
+                                    <h3>REST API</h3>
+                                    <p>VirtuSim предоставляет REST API для интеграции с другими системами:</p>
+                                    <div class="code-block">
+// Пример запроса к API
+fetch('https://api.virtusim.com/v1/simulators', {
+    method: 'GET',
+    headers: {
+        'Authorization': 'Bearer YOUR_API_KEY',
+        'Content-Type': 'application/json'
+    }
+})
+.then(response => response.json())
+.then(data => console.log(data));
+                                    </div>
+                                    
+                                    <h3>Доступные endpoints</h3>
+                                    <ul>
+                                        <li><code>/v1/simulators</code> - получение списка симуляторов</li>
+                                        <li><code>/v1/simulators/{id}</code> - получение информации о симуляторе</li>
+                                        <li><code>/v1/users/{id}/simulators</code> - симуляторы пользователя</li>
+                                        <li><code>/v1/upload</code> - загрузка новых симуляторов</li>
+                                    </ul>
+                                </div>
+                                
+                                <div class="docs-article" id="troubleshooting">
+                                    <h2>Решение проблем</h2>
+                                    
+                                    <h3>Частые проблемы и решения</h3>
+                                    
+                                    <h4>Проблема: Ошибка при загрузке файла</h4>
+                                    <p><strong>Решение:</strong></p>
+                                    <ul>
+                                        <li>Проверьте размер файла (максимум 2 ГБ)</li>
+                                        <li>Убедитесь, что архив не поврежден</li>
+                                        <li>Попробуйте заархивировать файлы заново</li>
+                                        <li>Используйте поддерживаемый формат (ZIP, RAR, 7Z)</li>
+                                    </ul>
+                                    
+                                    <h4>Проблема: Проект не проходит модерацию</h4>
+                                    <p><strong>Решение:</strong></p>
+                                    <ul>
+                                        <li>Проверьте, соответствует ли контент правилам платформы</li>
+                                        <li>Убедитесь, что документация полная и понятная</li>
+                                        <li>Добавьте качественные скриншоты</li>
+                                        <li>Проверьте, нет ли нарушений авторских прав</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FAQ Page -->
+        <div id="faq-page" class="page-content" style="display: none;">
+            <div class="container">
+                <div class="page-header">
+                    <h1>Часто задаваемые вопросы</h1>
+                    <p>Ответы на самые популярные вопросы о платформе VirtuSim</p>
+                </div>
+                <div class="faq-section">
+                    <div class="container">
+                        <div class="faq-container">
+                            <div class="faq-item">
+                                <div class="faq-question">
+                                    <span>Как зарегистрироваться на платформе?</span>
+                                    <i class="fas fa-chevron-down"></i>
+                                </div>
+                                <div class="faq-answer">
+                                    <p>Для регистрации нажмите кнопку "Регистрация" в правом верхнем углу сайта. Заполните необходимые поля: email, имя пользователя и пароль. После подтверждения email вы получите полный доступ к платформе.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="faq-item">
+                                <div class="faq-question">
+                                    <span>Какие форматы файлов поддерживаются для загрузки?</span>
+                                    <i class="fas fa-chevron-down"></i>
+                                </div>
+                                <div class="faq-answer">
+                                    <p>Мы поддерживаем следующие форматы: ZIP, RAR, 7Z для архивов. Максимальный размер файла - 2 ГБ. Для документации рекомендуем использовать PDF или Markdown форматы.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="faq-item">
+                                <div class="faq-question">
+                                    <span>Как проходит модерация контента?</span>
+                                    <i class="fas fa-chevron-down"></i>
+                                </div>
+                                <div class="faq-answer">
+                                    <p>Все загружаемые симуляторы проходят автоматическую проверку на вирусы и ручную модерацию на соответствие правилам платформы. Стандартный срок модерации - 48 часов.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="faq-item">
+                                <div class="faq-question">
+                                    <span>Можно ли использовать платформу для коммерческих проектов?</span>
+                                    <i class="fas fa-chevron-down"></i>
+                                </div>
+                                <div class="faq-answer">
+                                    <p>Да, вы можете размещать коммерческие симуляторы. Для этого необходимо приобрести коммерческую лицензию и соблюдать условия лицензионного соглашения.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="faq-item">
+                                <div class="faq-question">
+                                    <span>Как получить техническую поддержку?</span>
+                                    <i class="fas fa-chevron-down"></i>
+                                </div>
+                                <div class="faq-answer">
+                                    <p>Вы можете обратиться в нашу службу поддержки по email: <a href="mailto:julia.wolf.878@gmail.com" class="contact-link">julia.wolf.878@gmail.com</a> или воспользоваться форумом разработчиков для получения помощи сообщества.</p>
+                                </div>
+                            </div>
+
+                            <div class="faq-item">
+                                <div class="faq-question">
+                                    <span>Какие системные требования у платформы?</span>
+                                    <i class="fas fa-chevron-down"></i>
+                                </div>
+                                <div class="faq-answer">
+                                    <p>Платформа работает в современных браузерах (Chrome, Firefox, Safari, Edge). Для загрузки симуляторов требуется стабильное интернет-соединение. Конкретные требования к симуляторам указываются их разработчиками.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contacts Page -->
+        <div id="contacts-page" class="page-content" style="display: none;">
+            <div class="container">
+                <div class="page-header">
+                    <h1>Контакты</h1>
+                    <p>Свяжитесь с нами любым удобным способом</p>
+                </div>
+                <div class="contacts-section">
+                    <div class="container">
+                        <div class="contacts-grid">
+                            <div class="contact-card">
+                                <div class="contact-icon">
+                                    <i class="fas fa-envelope"></i>
+                                </div>
+                                <h3>Электронная почта</h3>
+                                <div class="contact-info">
+                                    <p>Основной канал связи для технической поддержки и общих вопросов:</p>
+                                    <p><a href="mailto:julia.wolf.878@gmail.com" class="contact-link">julia.wolf.878@gmail.com</a></p>
+                                    <p>Время ответа: в течение 24 часов</p>
+                                </div>
+                            </div>
+                            
+                            <div class="contact-card">
+                                <div class="contact-icon">
+                                    <i class="fas fa-comments"></i>
+                                </div>
+                                <h3>Форум поддержки</h3>
+                                <div class="contact-info">
+                                    <p>Получите помощь от сообщества разработчиков и экспертов:</p>
+                                    <p><a href="#" class="contact-link" id="forumContactBtn">Перейти на форум</a></p>
+                                    <p>Активное сообщество, быстрые ответы</p>
+                                </div>
+                            </div>
+                            
+                            <div class="contact-card">
+                                <div class="contact-icon">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                </div>
+                                <h3>Адрес</h3>
+                                <div class="contact-info">
+                                    <p>Город:</p>
+                                    <p>Сыктывкар</p>
+                                    <p>Республика Коми, Россия</p>
+                                </div>
+                            </div>
+                            
+                            <div class="contact-card">
+                                <div class="contact-icon">
+                                    <i class="fab fa-vk"></i>
+                                </div>
+                                <h3>Сообщество ВКонтакте</h3>
+                                <div class="contact-info">
+                                    <p>Присоединяйтесь к нашему сообществу для обновлений и общения:</p>
+                                    <p><a href="https://vk.com/virtusim1" target="_blank" class="contact-link">vk.com/virtusim1</a></p>
+                                    <p>Новости, анонсы, обсуждения</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="info-box" style="margin-top: 40px;">
+                            <h3>Часы работы поддержки</h3>
+                            <p>Наша служба поддержки работает:</p>
+                            <ul>
+                                <li><strong>Понедельник - Пятница:</strong> 9:00 - 18:00 (МСК)</li>
+                                <li><strong>Суббота:</strong> 10:00 - 16:00 (МСК)</li>
+                                <li><strong>Воскресенье:</strong> выходной</li>
+                            </ul>
+                            <p>В нерабочее время вы можете оставить сообщение, и мы ответим в ближайший рабочий день.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Privacy Policy Page -->
+        <div id="privacy-page" class="page-content" style="display: none;">
+            <div class="container">
+                <div class="page-header">
+                    <h1>Политика конфиденциальности</h1>
+                    <p>Как мы собираем, используем и защищаем ваши данные</p>
+                </div>
+                <div class="legal-content">
+                    <div class="legal-section">
+                        <h2>1. Общие положения</h2>
+                        <p>Настоящая Политика конфиденциальности описывает, как платформа VirtuSim собирает, использует и защищает вашу личную информацию при использовании наших услуг.</p>
+                        <p>Мы стремимся защищать вашу конфиденциальность и обеспечивать безопасность ваших персональных данных.</p>
+                    </div>
+                    
+                    <div class="legal-section">
+                        <h2>2. Собираемая информация</h2>
+                        <h3>2.1. Информация, предоставляемая вами</h3>
+                        <ul>
+                            <li>Имя, адрес электронной почты и контактные данные при регистрации</li>
+                            <li>Информация профиля (аватар, описание, навыки)</li>
+                            <li>Загружаемый контент и связанные метаданные</li>
+                            <li>Сообщения, комментарии и отзывы</li>
+                            <li>Платежная информация (для коммерческих проектов)</li>
+                        </ul>
+                        
+                        <h3>2.2. Автоматически собираемая информация</h3>
+                        <ul>
+                            <li>Данные об использовании платформы (посещенные страницы, время сеансов)</li>
+                            <li>IP-адрес, данные браузера и операционной системы</li>
+                            <li>Файлы cookie и аналогичные технологии отслеживания</li>
+                            <li>Информация об устройстве и его характеристиках</li>
+                            <li>Данные о местоположении (если предоставлено разрешение)</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="legal-section">
+                        <h2>3. Использование информации</h2>
+                        <p>Мы используем собранную информацию для следующих целей:</p>
+                        <ul>
+                            <li>Предоставления и улучшения наших услуг</li>
+                            <li>Обработки транзакций и управления учетными записями</li>
+                            <li>Коммуникации с пользователями (уведомления, поддержка)</li>
+                            <li>Обеспечения безопасности платформы и предотвращения мошенничества</li>
+                            <li>Анализа использования и разработки новых функций</li>
+                            <li>Персонализации пользовательского опыта</li>
+                            <li>Соблюдения юридических обязательств</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="legal-section">
+                        <h2>4. Обмен информацией</h2>
+                        <p>Мы не продаем и не передаем вашу личную информацию третьим лицам, за исключением следующих случаев:</p>
+                        <ul>
+                            <li>С вашего явного согласия</li>
+                            <li>Для выполнения юридических обязательств или ответа на законные запросы</li>
+                            <li>Для защиты наших прав, собственности или безопасности</li>
+                            <li>При реорганизации, слиянии или продаже компании</li>
+                            <li>Сервисным провайдерам, которые помогают нам в работе платформы (при соблюдении строгих соглашений о конфиденциальности)</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="legal-section">
+                        <h2>5. Файлы cookie и отслеживание</h2>
+                        <p>Мы используем файлы cookie и аналогичные технологии для:</p>
+                        <ul>
+                            <li>Аутентификации пользователей и обеспечения безопасности сеансов</li>
+                            <li>Запоминания предпочтений и настроек</li>
+                            <li>Анализа трафика и использования платформы</li>
+                            <li>Улучшения пользовательского опыта и функциональности</li>
+                            <li>Предоставления релевантного контента и рекламы</li>
+                        </ul>
+                        <p>Вы можете управлять настройками cookie через параметры вашего браузера, однако это может ограничить функциональность платформы.</p>
+                    </div>
+                    
+                    <div class="legal-section">
+                        <h2>6. Безопасность данных</h2>
+                        <p>Мы принимаем разумные технические и организационные меры для защиты вашей информации:</p>
+                        <ul>
+                            <li>Шифрование передаваемых данных с использованием SSL/TLS</li>
+                            <li>Регулярное обновление систем безопасности</li>
+                            <li>Ограниченный доступ к персональным данным только для уполномоченного персонала</li>
+                            <li>Регулярные проверки безопасности и аудиты</li>
+                        </ul>
+                        <p>Однако ни один метод передачи данных через интернет не является абсолютно безопасным, и мы не можем гарантировать абсолютную безопасность.</p>
+                    </div>
+                    
+                    <div class="legal-section">
+                        <h2>7. Хранение данных</h2>
+                        <p>Мы храним ваши персональные данные только до тех пор, пока это необходимо для целей, описанных в настоящей Политике, или в соответствии с требованиями законодательства.</p>
+                        <p>Вы можете запросить удаление ваших данных в любое время, за исключением случаев, когда мы обязаны хранить информацию по юридическим причинам.</p>
+                    </div>
+                    
+                    <div class="legal-section">
+                        <h2>8. Ваши права</h2>
+                        <p>В соответствии с применимым законодательством вы имеете право:</p>
+                        <ul>
+                            <li>Доступа к вашим персональным данным и их копирования</li>
+                            <li>Исправления неточных или неполных данных</li>
+                            <li>Удаления ваших персональных данных</li>
+                            <li>Ограничения или возражения против обработки данных</li>
+                            <li>Переноса ваших данных другому поставщику услуг</li>
+                            <li>Отзыва согласия на обработку данных</li>
+                            <li>Подачи жалобы в надзорный орган</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="legal-section">
+                        <h2>9. Международная передача данных</h2>
+                        <p>Ваши данные могут обрабатываться и храниться в странах за пределами вашей страны проживания. Мы обеспечиваем адекватную защиту таких передач в соответствии с применимым законодательством.</p>
+                    </div>
+                    
+                    <div class="legal-section">
+                        <h2>10. Изменения в политике</h2>
+                        <p>Мы можем периодически обновлять настоящую Политику конфиденциальности. О существенных изменениях мы уведомим вас через платформу или по электронной почте.</p>
+                    </div>
+                    
+                    <div class="legal-section">
+                        <h2>11. Контакты</h2>
+                        <p>По вопросам, связанным с конфиденциальностью, обращайтесь: <a href="mailto:julia.wolf.878@gmail.com" class="contact-link">julia.wolf.878@gmail.com</a></p>
+                        <p>Дата последнего обновления: 1 января 2025 года</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Copyright Page -->
+        <div id="copyright-page" class="page-content" style="display: none;">
+            <div class="container">
+                <div class="page-header">
+                    <h1>Авторские права</h1>
+                    <p>Политика защиты интеллектуальной собственности</p>
+                </div>
+                <div class="legal-content">
+                    <div class="legal-section">
+                        <h2>1. Соблюдение авторских прав</h2>
+                        <p>VirtuSim уважает права интеллектуальной собственности и ожидает того же от пользователей платформы. Мы реагируем на уведомления о нарушении авторских прав в соответствии с действующим законодательством и международными соглашениями.</p>
+                    </div>
+                    
+                    <div class="legal-section">
+                        <h2>2. Права на платформу</h2>
+                        <p>Все права на платформу VirtuSim, включая но не ограничиваясь:</p>
+                        <ul>
+                            <li>Дизайн, пользовательский интерфейс и опыт</li>
+                            <li>Исходный код, программное обеспечение и алгоритмы</li>
+                            <li>Логотип, фирменный стиль и брендинг</li>
+                            <li>Документация, руководства и обучающие материалы</li>
+                            <li>База данных пользователей, контента и метаданных</li>
+                        </ul>
+                        <p>принадлежат компании VirtuSim и защищены законодательством об интеллектуальной собственности, включая законы об авторском праве и товарных знаках.</p>
+                    </div>
+                    
+                    <div class="legal-section">
+                        <h2>3. Права на пользовательский контент</h2>
+                        <h3>3.1. Сохранение прав</h3>
+                        <p>Загружая контент на платформу, вы сохраняете все права интеллектуальной собственности на ваш контент. VirtuSim не претендует на право собственности на ваш контент.</p>
+                        
+                        <h3>3.2. Предоставление лицензии</h3>
+                        <p>Загружая контент, вы предоставляете VirtuSim неисключительную, безвозмездную, мировую лицензию на использование, воспроизведение, модификацию, отображение и распространение вашего контента в рамках функционала платформы. Эта лицензия необходима для предоставления наших услуг.</p>
+                        
+                        <h3>3.3. Ответственность за контент</h3>
+                        <p>Вы несете полную ответственность за контент, который загружаете на платформу, и гарантируете, что обладаете необходимыми правами на его распространение.</p>
+                    </div>
+                    
+                    <div class="legal-section">
+                        <h2>4. Уведомления о нарушении</h2>
+                        <h3>4.1. Процедура подачи жалобы</h3>
+                        <p>Если вы считаете, что ваш контент был скопирован или используется с нарушением ваших авторских прав, отправьте уведомление по адресу: <a href="mailto:julia.wolf.878@gmail.com" class="contact-link">julia.wolf.878@gmail.com</a></p>
+                        
+                        <h3>4.2. Необходимая информация</h3>
+                        <p>В уведомлении о нарушении необходимо указать:</p>
+                        <ul>
+                            <li>Ваши контактные данные (имя, адрес, телефон, email)</li>
+                            <li>Описание защищаемого произведения с указанием автора</li>
+                            <li>URL-адрес нарушающего контента на нашей платформе</li>
+                            <li>Доказательства ваших прав (регистрационные номера, даты)</li>
+                            <li>Заявление о добросовестности и точности информации</li>
+                            <li>Вашу электронную или физическую подпись</li>
+                        </ul>
+                        
+                        <h3>4.3. Рассмотрение жалоб</h3>
+                        <p>Мы рассмотрим ваше уведомление в течение 5 рабочих дней и примем соответствующие меры, которые могут включать удаление нарушающего контента или блокировку доступа к нему.</p>
+                    </div>
+                    
+                    <div class="legal-section">
+                        <h2>5. Ответственность за нарушения</h2>
+                        <p>Пользователи, неоднократно нарушающие авторские права, могут быть permanently заблокированы на платформе. В серьезных случаях мы оставляем за собой право передавать информацию о нарушениях правоохранительным органам.</p>
+                    </div>
+                    
+                    <div class="legal-section">
+                        <h2>6. Использование открытого контента</h2>
+                        <p>При использовании открытого контента или контента под свободными лицензиями вы обязаны:</p>
+                        <ul>
+                            <li>Соблюдать условия соответствующих лицензий (GPL, MIT, Creative Commons и др.)</li>
+                            <li>Указывать авторов и сохранять уведомления об авторских правах</li>
+                            <li>Следовать требованиям о распространении производных работ</li>
+                            <li>Предоставлять доступ к исходному коду, если это требуется лицензией</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="legal-section">
+                        <h2>7. Добросовестное использование</h2>
+                        <p>Платформа разрешает добросовестное использование защищенных материалов в образовательных, исследовательских и критических целях в соответствии с применимым законодательством о добросовестном использовании.</p>
+                    </div>
+                    
+                    <div class="legal-section">
+                        <h2>8. Контакты по вопросам авторских прав</h2>
+                        <p>По всем вопросам, связанным с авторскими правами, обращайтесь: <a href="mailto:julia.wolf.878@gmail.com" class="contact-link">julia.wolf.878@gmail.com</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Licensing Page -->
+        <div id="licensing-page" class="page-content" style="display: none;">
+            <div class="container">
+                <div class="page-header">
+                    <h1>Лицензирование</h1>
+                    <p>Условия использования и распространения контента</p>
+                </div>
+                <div class="legal-content">
+                    <div class="legal-section">
+                        <h2>1. Выбор лицензии</h2>
+                        <p>При загрузке контента на VirtuSim вы можете выбрать одну из следующих лицензий для вашего произведения. Выбор лицензии определяет условия, на которых другие пользователи могут использовать ваш контент.</p>
+                    </div>
+                    
+                    <div class="legal-section">
+                        <h2>2. Доступные лицензии</h2>
+                        
+                        <h3>2.1. Все права защищены (All Rights Reserved)</h3>
+                        <p><strong>Описание:</strong> Полная защита авторских прав. Запрещает любое использование вашего контента без явного разрешения.</p>
+                        <p><strong>Разрешено:</strong> Просматривать и использовать в соответствии с базовым функционалом платформы.</p>
+                        <p><strong>Запрещено:</strong> Копировать, модифицировать, распространять, создавать производные работы без письменного разрешения.</p>
+                        
+                        <h3>2.2. Creative Commons Attribution (CC BY)</h3>
+                        <p><strong>Описание:</strong> Разрешает любое использование с обязательным указанием авторства.</p>
+                        <p><strong>Разрешено:</strong> Использовать, копировать, распространять, модифицировать с указанием автора.</p>
+                        <p><strong>Запрещено:</strong> Использование без указания авторства.</p>
+                        
+                        <h3>2.3. Creative Commons Attribution-NonCommercial (CC BY-NC)</h3>
+                        <p><strong>Описание:</strong> Разрешает некоммерческое использование с указанием авторства.</p>
+                        <p><strong>Разрешено:</strong> Использовать в некоммерческих целях с указанием автора.</p>
+                        <p><strong>Запрещено:</strong> Коммерческое использование без дополнительного разрешения.</p>
+                        
+                        <h3>2.4. MIT License</h3>
+                        <p><strong>Описание:</strong> Разрешает свободное использование, включая коммерческое, с минимальными ограничениями.</p>
+                        <p><strong>Разрешено:</strong> Использовать, модифицировать, распространять в любых целях.</p>
+                        <p><strong>Условия:</strong> Сохранение уведомления о лицензии и авторских прав в копиях.</p>
+                        
+                        <h3>2.5. Apache License 2.0</h3>
+                        <p><strong>Описание:</strong> Разрешает использование с сохранением патентных прав и требованием к уведомлениям.</p>
+                        <p><strong>Разрешено:</strong> Использовать в коммерческих целях, модифицировать, распространять.</p>
+                        <p><strong>Условия:</strong> Сохранение уведомлений и указание существенных изменений.</p>
+                        
+                        <h3>2.6. GNU GPL v3</h3>
+                        <p><strong>Описание:</strong> Копилефт-лицензия, требующая распространения производных работ под той же лицензией.</p>
+                        <p><strong>Разрешено:</strong> Использовать, модифицировать, распространять.</p>
+                        <p><strong>Условия:</strong> Производные работы должны распространяться под GPL v3, должен быть доступен исходный код.</p>
+                    </div>
+                    
+                    <div class="legal-section">
+                        <h2>3. Коммерческое лицензирование</h2>
+                        <h3>3.1. Условия коммерческого использования</h3>
+                        <p>Для коммерческого использования контента, защищенного авторским правом, необходимо:</p>
+                        <ul>
+                            <li>Получить явное разрешение от правообладателя</li>
+                            <li>Заключить лицензионное соглашение с указанием условий использования</li>
+                            <li>Соблюдать условия, указанные правообладателем (ограничения, сроки, территория)</li>
+                            <li>Производить выплаты роялти, если это предусмотрено соглашением</li>
+                        </ul>
+                        
+                        <h3>3.2. Платформа коммерческих лицензий</h3>
+                        <p>VirtuSim предоставляет инструменты для управления коммерческими лицензиями:</p>
+                        <ul>
+                            <li>Генерация и управление лицензионными ключами</li>
+                            <li>Настройка прав доступа и ограничений использования</li>
+                            <li>Интегрированная система платежей и управления роялти</li>
+                            <li>Автоматизированное отслеживание использования лицензий</li>
+                            <li>Юридическая поддержка и шаблоны соглашений</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="legal-section">
+                        <h2>4. Ответственность и гарантии</h2>
+                        <h3>4.1. Гарантии загружающего</h3>
+                        <p>Загружая контент, вы гарантируете, что:</p>
+                        <ul>
+                            <li>Имеете необходимые права на распространение контента</li>
+                            <li>Контент не нарушает права интеллектуальной собственности третьих лиц</li>
+                            <li>Выбранная лицензия соответствует вашим намерениям относительно использования контента</li>
+                            <li>Контент не содержит незаконных или вредоносных элементов</li>
+                        </ul>
+                        
+                        <h3>4.2. Последствия нарушений лицензий</h3>
+                        <p>Нарушение условий лицензии может привести к:</p>
+                        <ul>
+                            <li>Немедленному удалению контента с платформы</li>
+                            <li>Временной или постоянной блокировке аккаунта</li>
+                            <li>Юридической ответственности согласно применимому законодательству</li>
+                            <li>Финансовой компенсации правообладателю</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="legal-section">
+                        <h2>5. Изменение лицензии</h2>
+                        <p>Вы можете изменить лицензию вашего контента в любое время через панель управления проектом. Однако это изменение не имеет обратной силы и не затрагивает права, уже предоставленные пользователям до изменения лицензии.</p>
+                    </div>
+                    
+                    <div class="legal-section">
+                        <h2>6. Консультации по выбору лицензии</h2>
+                        <p>Для получения консультаций по выбору подходящей лицензии обращайтесь: <a href="mailto:julia.wolf.878@gmail.com" class="contact-link">julia.wolf.878@gmail.com</a></p>
+                        <p>Мы поможем подобрать лицензию, соответствующую вашим целям и бизнес-модели.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Terms of Use Page -->
+        <div id="terms-page" class="page-content" style="display: none;">
+            <div class="container">
+                <div class="page-header">
+                    <h1>Условия использования</h1>
+                    <p>Правила и условия использования платформы VirtuSim</p>
+                </div>
+                <div class="legal-content">
+                    <div class="legal-section">
+                        <h2>1. Общие положения</h2>
+                        <p>Настоящие Условия использования регулируют отношения между Администрацией платформы VirtuSim (далее — «Администрация») и Пользователем (далее — «Вы») в связи с использованием платформы VirtuSim.</p>
+                        <p>Регистрируясь на платформе или используя её, Вы соглашаетесь с настоящими Условиями. Если Вы не согласны с Условиями, Вы не должны использовать платформу.</p>
+                    </div>
+                    
+                    <div class="legal-section">
+                        <h2>2. Аккаунт пользователя</h2>
+                        <h3>2.1. Регистрация</h3>
+                        <p>Для доступа к некоторым функциям платформы требуется регистрация аккаунта. Вы обязаны предоставить точную и полную информацию при регистрации.</p>
+                        
+                        <h3>2.2. Безопасность аккаунта</h3>
+                        <p>Вы несете ответственность за сохранение конфиденциальности данных вашего аккаунта и пароля. Вы соглашаетесь немедленно уведомлять Администрацию о любом несанкционированном использовании вашего аккаунта.</p>
+                        
+                        <h3>2.3. Возрастные ограничения</h3>
+                        <p>Лицам, не достигшим 14 лет, запрещено использовать платформу без согласия родителей или законных представителей.</p>
+                    </div>
+                    
+                    <div class="legal-section">
+                        <h2>3. Правила использования</h2>
+                        <p>При использовании платформы Вы обязуетесь:</p>
+                        <ul>
+                            <li>Не нарушать права интеллектуальной собственности других лиц</li>
+                            <li>Не загружать вредоносное программное обеспечение</li>
+                            <li>Не распространять спам или нежелательную рекламу</li>
+                            <li>Не совершать действия, которые могут нарушить работу платформы</li>
+                            <li>Не использовать платформу для незаконной деятельности</li>
+                            <li>Не оскорблять других пользователей и не нарушать этические нормы</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="legal-section">
+                        <h2>4. Контент пользователей</h2>
+                        <h3>4.1. Ответственность за контент</h3>
+                        <p>Вы несете полную ответственность за контент, который загружаете на платформу. Администрация не проверяет весь пользовательский контент, но оставляет за собой право удалять любой контент, нарушающий настоящие Условия.</p>
+                        
+                        <h3>4.2. Лицензия на контент</h3>
+                        <p>Загружая контент на платформу, Вы предоставляете VirtuSim неисключительную, безвозмездную лицензию на использование, воспроизведение и распространение вашего контента в рамках функционала платформы.</p>
+                    </div>
+                    
+                    <div class="legal-section">
+                        <h2>5. Интеллектуальная собственность</h2>
+                        <p>Все права на платформу VirtuSim, включая дизайн, логотип, исходный код и документацию, принадлежат Администрации. Пользовательский контент остается собственностью его создателей.</p>
+                    </div>
+                    
+                    <div class="legal-section">
+                        <h2>6. Ограничение ответственности</h2>
+                        <p>Платформа предоставляется «как есть». Администрация не гарантирует бесперебойную работу платформы и не несет ответственности за любые прямые или косвенные убытки, возникшие в результате использования платформы.</p>
+                    </div>
+                    
+                    <div class="legal-section">
+                        <h2>7. Изменение условий</h2>
+                        <p>Администрация оставляет за собой право изменять настоящие Условия в любое время. Изменения вступают в силу с момента их публикации на платформе. Продолжение использования платформы после изменений означает ваше согласие с новыми Условиями.</p>
+                    </div>
+                    
+                    <div class="legal-section">
+                        <h2>8. Прекращение доступа</h2>
+                        <p>Администрация вправе приостановить или прекратить ваш доступ к платформе в случае нарушения вами настоящих Условий.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>VirtuSim</h3>
+                    <p>Передовая платформа для создания, тестирования и распространения симуляторов. Присоединяйтесь к нашему растущему сообществу разработчиков.</p>
+                    <div class="social-links">
+                        <a href="https://vk.com/virtusim1" target="_blank"><i class="fab fa-vk"></i></a>
+                        <a href="#"><i class="fab fa-telegram"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                        <a href="#"><i class="fab fa-github"></i></a>
+                    </div>
+                </div>
+                <div class="footer-column">
+                    <h3>Разделы</h3>
+                    <ul class="footer-links">
+                        <li><a href="#" data-page="home">Главная</a></li>
+                        <li><a href="#" data-page="documentation">Документация</a></li>
+                        <li><a href="#" data-page="support">Поддержка</a></li>
+                        <li><a href="#" data-page="contacts">Контакты</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Поддержка</h3>
+                    <ul class="footer-links">
+                        <li><a href="mailto:julia.wolf.878@gmail.com">Центр помощи</a></li>
+                        <li><a href="#" data-page="faq">FAQ</a></li>
+                        <li><a href="#" data-page="documentation">Документация</a></li>
+                        <li><a href="#" data-page="contacts">Контакты</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Правовая информация</h3>
+                    <ul class="footer-links">
+                        <li><a href="#" data-page="terms">Условия использования</a></li>
+                        <li><a href="#" data-page="privacy">Политика конфиденциальности</a></li>
+                        <li><a href="#" data-page="copyright">Авторские права</a></li>
+                        <li><a href="#" data-page="licensing">Лицензирование</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2025 VirtuSim. Все права защищены. Платформа для симуляторов.</p>
+                <p>Контактная информация: e-mail: <a href="mailto:julia.wolf.878@gmail.com" style="color: #b8c1ec;">julia.wolf.878@gmail.com</a> | Город: Сыктывкар</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Модальные окна -->
+    <!-- Модальное окно для входа/регистрации -->
+    <div class="modal login-modal" id="loginModal">
+        <div class="login-content">
+            <div class="modal-header">
+                <h2>Вход в систему</h2>
+                <button class="close-modal" id="closeLoginModal">&times;</button>
+            </div>
+            <div class="login-tabs">
+                <div class="login-tab active" data-tab="login">Вход</div>
+                <div class="login-tab" data-tab="register">Регистрация</div>
+            </div>
+            
+            <form id="loginForm" class="login-form active">
+                <div class="form-group">
+                    <label for="loginEmail">Email</label>
+                    <input type="email" id="loginEmail" class="form-control" placeholder="Введите ваш email" required>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Пароль</label>
+                    <input type="password" id="loginPassword" class="form-control" placeholder="Введите ваш пароль" required>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Войти</button>
+                    <button type="button" class="btn btn-outline" id="cancelLoginBtn">Отмена</button>
+                </div>
+            </form>
+            
+            <form id="registerForm" class="login-form">
+                <div class="form-group">
+                    <label for="registerName">Имя пользователя</label>
+                    <input type="text" id="registerName" class="form-control" placeholder="Введите имя пользователя" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerEmail">Email</label>
+                    <input type="email" id="registerEmail" class="form-control" placeholder="Введите ваш email" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerPassword">Пароль</label>
+                    <input type="password" id="registerPassword" class="form-control" placeholder="Придумайте пароль" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerConfirmPassword">Подтверждение пароля</label>
+                    <input type="password" id="registerConfirmPassword" class="form-control" placeholder="Повторите пароль" required>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="agreeTerms" required>
+                        Я согласен с <a href="#" data-page="terms">условиями использования</a>
+                    </label>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Зарегистрироваться</button>
+                    <button type="button" class="btn btn-outline" id="cancelRegisterBtn">Отмена</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Модальное окно для смены логотипа -->
+    <div class="modal" id="logoModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Сменить логотип</h2>
+                <button class="close-modal" id="closeLogoModal">&times;</button>
+            </div>
+            <form id="logoForm">
+                <div class="form-group">
+                    <label for="logoType">Тип логотипа</label>
+                    <select id="logoType" class="form-control">
+                        <option value="text">Текстовый логотип</option>
+                        <option value="icon">Иконка</option>
+                    </select>
+                </div>
+                
+                <div class="form-group" id="textLogoGroup">
+                    <label for="logoTextInput">Текст логотипа</label>
+                    <input type="text" id="logoTextInput" class="form-control" value="VirtuSim">
+                </div>
+                
+                <div class="form-group" id="iconLogoGroup" style="display: none;">
+                    <label for="logoIconSelect">Выберите иконку</label>
+                    <select id="logoIconSelect" class="form-control">
+                        <option value="vr-cardboard">VR очки</option>
+                        <option value="gamepad">Геймпад</option>
+                        <option value="cogs">Шестеренки</option>
+                        <option value="rocket">Ракета</option>
+                        <option value="atom">Атом</option>
+                    </select>
+                    <div class="logo-preview">
+                        <span>Предпросмотр:</span>
+                        <i id="logoIconPreview" class="fas fa-vr-cardboard" style="font-size: 2.5rem; color: var(--primary);"></i>
+                    </div>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" class="btn btn-outline" id="cancelLogoBtn">Отмена</button>
+                    <button type="submit" class="btn btn-primary">Применить изменения</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Основная функциональность
+        document.addEventListener('DOMContentLoaded', function() {
+            // Инициализация - показать главную страницу
+            showPage('home');
+            
+            // Навигация по страницам
+            function showPage(pageId) {
+                console.log('Showing page:', pageId);
+                document.querySelectorAll('.page-content').forEach(page => {
+                    page.style.display = 'none';
+                });
+                
+                const targetPage = document.getElementById(pageId + '-page');
+                if (targetPage) {
+                    targetPage.style.display = 'block';
+                } else {
+                    console.error('Page not found:', pageId);
+                }
+                
+                window.scrollTo(0, 0);
+                
+                // Закрыть мобильное меню при переходе
+                document.getElementById('mobileMenu').classList.remove('active');
+            }
+
+            // Добавить обработчики для навигационных ссылок
+            document.querySelectorAll('.nav-link, .mobile-nav-link, .footer-links a').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const page = this.getAttribute('data-page');
+                    if (page) {
+                        showPage(page);
+                    }
+                });
+            });
+
+            // Функциональность кнопок Войти/Регистрация
+            document.getElementById('loginBtn').addEventListener('click', function() {
+                document.getElementById('loginModal').style.display = 'flex';
+                switchToTab('login');
+            });
+
+            document.getElementById('registerBtn').addEventListener('click', function() {
+                document.getElementById('loginModal').style.display = 'flex';
+                switchToTab('register');
+            });
+            
+            // Мобильные кнопки входа/регистрации
+            document.getElementById('mobileLoginBtn').addEventListener('click', function() {
+                document.getElementById('loginModal').style.display = 'flex';
+                switchToTab('login');
+                document.getElementById('mobileMenu').classList.remove('active');
+            });
+
+            document.getElementById('mobileRegisterBtn').addEventListener('click', function() {
+                document.getElementById('loginModal').style.display = 'flex';
+                switchToTab('register');
+                document.getElementById('mobileMenu').classList.remove('active');
+            });
+
+            // Переключение между вкладками входа/регистрации
+            function switchToTab(tabName) {
+                document.querySelectorAll('.login-tab').forEach(tab => {
+                    tab.classList.remove('active');
+                });
+                document.querySelectorAll('.login-form').forEach(form => {
+                    form.classList.remove('active');
+                });
+                
+                document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+                document.getElementById(tabName === 'login' ? 'loginForm' : 'registerForm').classList.add('active');
+            }
+
+            document.querySelectorAll('.login-tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    switchToTab(this.getAttribute('data-tab'));
+                });
+            });
+
+            // Закрытие модального окна входа
+            document.getElementById('closeLoginModal').addEventListener('click', function() {
+                document.getElementById('loginModal').style.display = 'none';
+            });
+
+            document.getElementById('cancelLoginBtn').addEventListener('click', function() {
+                document.getElementById('loginModal').style.display = 'none';
+            });
+
+            document.getElementById('cancelRegisterBtn').addEventListener('click', function() {
+                document.getElementById('loginModal').style.display = 'none';
+            });
+
+            // Обработка форм входа и регистрации
+            document.getElementById('loginForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const email = document.getElementById('loginEmail').value;
+                const password = document.getElementById('loginPassword').value;
+                
+                // Проверка администратора
+                if (email === 'admin@virtusim.com' && password === 'admin123') {
+                    localStorage.setItem('virtusim_admin', 'true');
+                    document.getElementById('adminPanel').style.display = 'block';
+                    alert('Успешный вход как администратор!');
+                } else {
+                    alert('Вход выполнен успешно!');
+                }
+                
+                document.getElementById('loginModal').style.display = 'none';
+                this.reset();
+            });
+
+            document.getElementById('registerForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const name = document.getElementById('registerName').value;
+                const email = document.getElementById('registerEmail').value;
+                const password = document.getElementById('registerPassword').value;
+                const confirmPassword = document.getElementById('registerConfirmPassword').value;
+                
+                if (password !== confirmPassword) {
+                    alert('Пароли не совпадают!');
+                    return;
+                }
+                
+                alert(`Регистрация успешна! Добро пожаловать, ${name}!`);
+                document.getElementById('loginModal').style.display = 'none';
+                this.reset();
+            });
+
+            // FAQ функциональность
+            document.querySelectorAll('.faq-question').forEach(question => {
+                question.addEventListener('click', function() {
+                    const answer = this.nextElementSibling;
+                    const isActive = answer.classList.contains('active');
+                    
+                    // Закрыть все ответы
+                    document.querySelectorAll('.faq-answer').forEach(ans => {
+                        ans.classList.remove('active');
+                    });
+                    
+                    // Открыть текущий, если был закрыт
+                    if (!isActive) {
+                        answer.classList.add('active');
+                    }
+                });
+            });
+            
+            // Документация навигация
+            document.querySelectorAll('.docs-nav-link').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href').substring(1);
+                    const targetElement = document.getElementById(targetId);
+                    
+                    if (targetElement) {
+                        document.querySelectorAll('.docs-nav-link').forEach(l => {
+                            l.classList.remove('active');
+                        });
+                        this.classList.add('active');
+                        targetElement.scrollIntoView({ behavior: 'smooth' });
+                    }
+                });
+            });
+
+            // Обработчики для кнопок на главной странице
+            document.getElementById('startDevelopmentBtn').addEventListener('click', function() {
+                showPage('documentation');
+            });
+
+            document.getElementById('learnMoreBtn').addEventListener('click', function() {
+                showPage('support');
+            });
+
+            document.getElementById('startUploadBtn').addEventListener('click', function() {
+                if (localStorage.getItem('virtusim_admin') === 'true') {
+                    alert('Функция добавления симулятора доступна в панели администратора');
+                } else {
+                    document.getElementById('loginModal').style.display = 'flex';
+                }
+            });
+
+            // Кнопки поддержки
+            document.getElementById('forumSupportBtn').addEventListener('click', function() {
+                alert('Форум поддержки будет доступен в ближайшее время');
+            });
+
+            document.getElementById('docsSupportBtn').addEventListener('click', function() {
+                showPage('documentation');
+            });
+
+            document.getElementById('faqSupportBtn').addEventListener('click', function() {
+                showPage('faq');
+            });
+
+            document.getElementById('forumContactBtn').addEventListener('click', function() {
+                alert('Форум поддержки будет доступен в ближайшее время');
+            });
+
+            // Мобильное меню
+            document.getElementById('mobileMenuBtn').addEventListener('click', function() {
+                document.getElementById('mobileMenu').classList.add('active');
+            });
+
+            document.getElementById('closeMobileMenu').addEventListener('click', function() {
+                document.getElementById('mobileMenu').classList.remove('active');
+            });
+
+            // Административные функции
+            document.getElementById('toggleEditModeBtn').addEventListener('click', function() {
+                document.body.classList.toggle('edit-mode');
+                document.getElementById('editControls').style.display = 
+                    document.body.classList.contains('edit-mode') ? 'block' : 'none';
+            });
+
+            document.getElementById('changeLogoBtn').addEventListener('click', function() {
+                document.getElementById('logoModal').style.display = 'flex';
+            });
+
+            // Закрытие модальных окон
+            document.querySelectorAll('.close-modal').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    this.closest('.modal').style.display = 'none';
+                });
+            });
+
+            // Изменение типа логотипа
+            document.getElementById('logoType').addEventListener('change', function() {
+                document.getElementById('textLogoGroup').style.display = 'none';
+                document.getElementById('iconLogoGroup').style.display = 'none';
+                
+                if (this.value === 'text') {
+                    document.getElementById('textLogoGroup').style.display = 'block';
+                } else if (this.value === 'icon') {
+                    document.getElementById('iconLogoGroup').style.display = 'block';
+                }
+            });
+
+            // Предпросмотр иконки логотипа
+            document.getElementById('logoIconSelect').addEventListener('change', function() {
+                const iconClass = 'fas fa-' + this.value;
+                document.getElementById('logoIconPreview').className = iconClass;
+            });
+
+            // Сохранение логотипа
+            document.getElementById('logoForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const logoType = document.getElementById('logoType').value;
+                
+                if (logoType === 'text') {
+                    const newText = document.getElementById('logoTextInput').value;
+                    document.getElementById('logoText').textContent = newText;
+                } else if (logoType === 'icon') {
+                    const newIcon = document.getElementById('logoIconSelect').value;
+                    document.getElementById('logoIcon').className = 'fas fa-' + newIcon;
+                }
+                
+                alert('Логотип успешно изменен!');
+                document.getElementById('logoModal').style.display = 'none';
+            });
+
+            // Отмена редактирования
+            document.getElementById('cancelEditBtn').addEventListener('click', function() {
+                document.body.classList.remove('edit-mode');
+                document.getElementById('editControls').style.display = 'none';
+            });
+
+            // Проверка прав администратора при загрузке
+            if (localStorage.getItem('virtusim_admin') === 'true') {
+                document.getElementById('adminPanel').style.display = 'block';
+            }
+
+            // Закрытие модальных окон при клике вне их
+            window.addEventListener('click', function(e) {
+                if (e.target.classList.contains('modal')) {
+                    e.target.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
